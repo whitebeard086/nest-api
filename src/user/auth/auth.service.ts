@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, HttpException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -9,6 +9,11 @@ interface SignupParams {
     password: string;
     name: string;
     phone: string;
+}
+
+interface SigninParams {
+    email: string;
+    password: string;
 }
 @Injectable()
 export class AuthService {
@@ -48,5 +53,17 @@ export class AuthService {
         );
 
         return { token };
+    }
+
+    async signin({ email, password }: SigninParams){
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if(!user){
+            throw new HttpException('Invalid credentials', 400)
+        }
     }
 }
