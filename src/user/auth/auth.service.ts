@@ -41,37 +41,41 @@ export class AuthService {
             },
         });
 
-        const token = await jwt.sign(
+        return this.generateJWT(name, user.id)
+    }
+
+    async signin({ email, password }: SigninParams) {
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                email,
+            },
+        });
+
+        if (!user) {
+            throw new HttpException('Invalid credentials', 400);
+        }
+
+        const hashedPassword = user.password;
+
+        const isValidPassword = await bcrypt.compare(password, hashedPassword);
+
+        if (!isValidPassword) {
+            throw new HttpException('Invalid credentials', 400);
+        }
+
+        return this.generateJWT(user.name, user.id)
+    }
+
+    private generateJWT(name: string, id: number) {
+        return jwt.sign(
             {
                 name,
-                id: user.id,
+                id,
             },
             process.env.JSON_TOKEN_KEY,
             {
                 expiresIn: 50000000,
             },
         );
-
-        return { token };
-    }
-
-    async signin({ email, password }: SigninParams){
-        const user = await this.prismaService.user.findUnique({
-            where: {
-                email
-            }
-        })
-
-        if(!user){
-            throw new HttpException('Invalid credentials', 400)
-        }
-
-        const hashedPassword = user.password
-
-        const isValidPassword = await bcrypt.compare(password, hashedPassword)
-
-        if(!isValidPassword){
-            throw new HttpException('Invalid credentials', 400)
-        }
     }
 }
