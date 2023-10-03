@@ -28,7 +28,7 @@ model Home {
   id                  Int @id @default(autoincrement())
   realtor_id          Int
   price               Float
-  addreess            String
+  address             String
   bedrooms            Int
   bathrooms           Float
   city                String

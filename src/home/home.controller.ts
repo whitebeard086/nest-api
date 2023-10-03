@@ -1,31 +1,33 @@
 import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { HomeService } from './home.service';
+import { HomeResponseDto } from './dto/home.dto';
 
 @Controller('home')
 export class HomeController {
+    constructor(private readonly homeService: HomeService) {}
+
     @Get()
-    getHomes(){
-        return []
+    getHomes(): Promise<HomeResponseDto[]> {
+        return this.homeService.getHomes();
     }
 
     @Get(':id')
-    getHome(){
-        return {}
+    getHome() {
+        return {};
     }
 
     @Post()
-    createHome(){
-        return {}
+    createHome() {
+        return {};
     }
 
     @Put(':id')
-    updateHome(){
-        return {}
+    updateHome() {
+        return {};
     }
 
     @Delete(':id')
-    deleteHome(){
-        return true
+    deleteHome() {
+        return true;
     }
-
-
 }
