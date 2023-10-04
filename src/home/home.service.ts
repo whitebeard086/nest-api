@@ -12,6 +12,16 @@ interface GetHomesQueryParams {
     property_type: PropertyType;
 }
 
+const homeSelect = {
+    id: true,
+    address: true,
+    city: true,
+    price: true,
+    property_type: true,
+    bedrooms: true,
+    bathrooms: true,
+}
+
 @Injectable()
 export class HomeService {
     constructor(private readonly prismaService: PrismaService) {}
@@ -39,7 +49,7 @@ export class HomeService {
         });
 
         if (!homes.length) {
-            throw new NotFoundException()
+            throw new NotFoundException();
         }
 
         return homes.map((home) => {
@@ -47,5 +57,34 @@ export class HomeService {
             delete returnedHomes.images;
             return new HomeResponseDto(returnedHomes);
         });
+    }
+
+    async getHomeById(id: number): Promise<HomeResponseDto> {
+        const home = await this.prismaService.home.findUnique({
+            where: {
+                id,
+            },
+            select: {
+                ...homeSelect,
+                images: {
+                    select: {
+                        url: true,
+                    },
+                },
+                realtor: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone: true,
+                    },
+                },
+            },
+        });
+
+        if (!home) {
+            throw new NotFoundException('Home not found');
+        }
+
+        return new HomeResponseDto(home);
     }
 }
