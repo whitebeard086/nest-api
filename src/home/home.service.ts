@@ -154,6 +154,18 @@ export class HomeService {
             data,
         });
 
-        return new HomeResponseDto(updatedHome)
+        return new HomeResponseDto(updatedHome);
+    }
+
+    async deleteHomeById(id: number) {
+        await this.prismaService.image.deleteMany({
+            where: { home_id: id },
+        });
+        
+        await this.prismaService.home.delete({
+            where: { id },
+        });
+
+        return true;
     }
 }

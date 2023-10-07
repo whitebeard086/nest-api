@@ -59,7 +59,9 @@ export class HomeController {
     }
 
     @Delete(':id')
-    deleteHome() {
-        return true;
+    deleteHome(
+        @Param('id', ParseIntPipe) id: number
+    ) {
+        return this.homeService.deleteHomeById(id);
     }
 }
